@@ -94,5 +94,5 @@ data.frame(beta = GCEfit$beta,
 Golan (1996)
 }
 \author{
-Marco Sandri, Enrico Ciavolino, Maurizio Carpita (\email{GCEmodels@gmail.com})
+Marco Sandri, Enrico Ciavolino, Maurizio Carpita (\email{gcemodels@gmail.com})
 }

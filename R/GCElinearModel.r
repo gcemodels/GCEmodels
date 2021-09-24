@@ -1,6 +1,6 @@
 #' Linear Regression Model
 #'
-#' @author Marco Sandri, Enrico Ciavolino, Maurizio Carpita (\email{GCEmodels@gmail.com})
+#' @author Marco Sandri, Enrico Ciavolino, Maurizio Carpita (\email{gcemodels@gmail.com})
 #' @param y numeric, n (Nx1) vector representing the dependent variable where N is the number of observations.
 #' @param X numeric, n (NxK) matrix representing a set of independent variables where K is number of regressors.
 #' @param Z numeric, An (KxM) matrix representing support spaces the for regression coefficients where M is the dimension of the support spaces.
