@@ -1,0 +1,7 @@
+useDynLib(ProvaProjEigen, .registration = TRUE)
+
+importFrom(Rcpp, evalCpp)
+exportPattern("^[[:alpha:]]+")
+importFrom(lbfgs,lbfgs)
+importFrom(stats,qchisq)
+importFrom(stats,sd)
