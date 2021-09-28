@@ -2,7 +2,7 @@
 // #include <Rcpp.h>
   // [[Rcpp::depends(RcppEigen)]]
 #include <RcppEigen.h>
-#include <Rcpp.h>
+
 
 #ifndef BEGIN_RCPP
 #define BEGIN_RCPP
@@ -13,13 +13,14 @@
 #endif
 
 using namespace Rcpp;
-using namespace Eigen;
-
-// user includes
-NumericVector gceLinGrad_eigen(SEXP lmb, SEXP env) {
   using Eigen::Map;
   using Eigen::MatrixXd;
   using Eigen::VectorXd;
+
+
+// user includes
+NumericVector gceLinGrad_eigen(SEXP lmb, SEXP env) {
+
   NumericVector lmbd(lmb);
   VectorXd lambda = as<Map<VectorXd> >(lmbd);
   Environment ev = as<Environment>(env);

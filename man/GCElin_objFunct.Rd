@@ -9,8 +9,6 @@
 GCElin_objFunct()
 GCElin_gradFunct()
 }
-\arguments{
-}
 \value{
   \code{GCElin_objFunct()} does not return a value, but displays a
   message to the console.
