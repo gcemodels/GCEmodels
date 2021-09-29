@@ -58,19 +58,6 @@ NumericVector gceLinObj_eigen(SEXP lmb, SEXP env) {
         MatrixXd lhs = -lambda.transpose()*y;
         MatrixXd MinValFun(lhs+(1-nu)*Omega_sum+nu*Psi_sum);
         NumericVector ret = as<NumericVector>(wrap(MinValFun));
-
-
-//  Rcpp::Rcout<< "MinValFun=" << MinValFun << std::endl;
-//  Rcpp::Rcout<< "tmp1=" << numerator.topLeftCorner(4,4) << std::endl;
-//  Rcpp::Rcout<< "X=" << X(19999,1) << std::endl;
-//  Rcpp::Rcout<< "Z=" << Z(2,1) << std::endl;
-//  Rcpp::Rcout<< "v=" << v(0,0) << std::endl;
-//  Rcpp::Rcout<< "K1=" << K1 << std::endl;
-//  Rcpp::Rcout<< "s1=" << s1 << std::endl;
-//  Rcpp::Rcout<< "lmbd=" << lmbd(0) << std::endl;
-//  Rcpp::Rcout<< "lambda=" << lambda(0,0) << std::endl;
-//  Rcpp::Rcout<< "lX=" << lX(0,0) << std::endl;
-
         return ret;
 }
 
