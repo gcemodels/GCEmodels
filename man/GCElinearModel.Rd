@@ -84,7 +84,7 @@ y <- runif(N)
 X <- matrix(runif(N*K), nrow = N, ncol = K)
 X <- cbind(rep(1, N), X)
 Z <- matrix(rep(c(-1, -0.5, 0, 0.5, 1), K+1), nrow = K+1, byrow = TRUE)
-GCEfit <- GCElinearModel(y, X, Z)
+GCEfit <- GCElinearModel(y, X, Z, linesearch="LBFGS_LINESEARCH_BACKTRACKING")
 data.frame(beta = GCEfit$beta,
            beta_lb = GCEfit$beta-1.96*sqrt(diag(GCEfit$var_beta)),
            beta_ub = GCEfit$beta+1.96*sqrt(diag(GCEfit$var_beta))
