@@ -4,7 +4,8 @@
 #' @param y numeric, n (Nx1) vector representing the dependent variable where N is the number of observations.
 #' @param X numeric, n (NxK) matrix representing a set of independent variables where K is number of regressors.
 #' @param Z numeric, An (KxM) matrix representing support spaces the for regression coefficients where M is the dimension of the support spaces.
-#' @param v An optional argument representing a support space for error terms: (a) if missing then v is a (5x1) vector of equally spaced points in [a,b] interval; (b) if a scalar (e.g. H) then v is a (Hx1) vector of equally spaced points in [a,b] interval; (c) can be a user-supplied vector; (d) can be a user-supplied matrix. Please note that in case (a) and (b) the [a,b] interval is centered around zero, and a and b are calculated using the empirical three-sigma rule Pukelsheim (1994)..
+#' @param v An optional argument representing a support space for error terms: (a) if missing then v is a (5x1) vector of equally spaced points in [a,b] interval; (b) if a scalar (e.g. H) then v is a (Hx1) vector of equally spaced points in [a,b] interval; (c) can be a user-supplied vector; (d) can be a user-supplied matrix. Please note that in case (a) and (b) the [a,b] interval is centered around zero, and a and b are calculated using the empirical three-sigma rule Pukelsheim (1994).
+#' @param k.sigma Implement the k-sigma rule
 #' @param nu numeric, optional: A weight parameter representing the trade-off between prediction and precision.
 #' @param p0 numeric, optional: Prior probabilities associated with the regression coefficients
 #' @param w0 numeric, optional: Prior probabilities associated with the error terms
@@ -48,7 +49,7 @@
 #' @importFrom Rcpp evalCpp
 #' @useDynLib GCEmodels, .registration=TRUE
 
-GCElinearModel <- function (y, X, Z, v, nu, p0, w0, m=6, gtol=0.9, invisible=1,
+GCElinearModel <- function (y, X, Z, v, nu, p0, w0, k.sigma=3, m=6, gtol=0.9, invisible=1,
                                  linesearch = "LBFGS_LINESEARCH_DEFAULT") {
   dimX <- dim(X)
   N <- dimX[1]
@@ -57,7 +58,7 @@ GCElinearModel <- function (y, X, Z, v, nu, p0, w0, m=6, gtol=0.9, invisible=1,
   if (missing(v)) {
     dimV <- 5
     sd_y <- stats::sd(y)
-    v <- seq(from = -3 * sd_y, to = 3 * sd_y, length.out = dimV)
+    v <- seq(from = -k.sigma * sd_y, to = k.sigma * sd_y, length.out = dimV)
   }
   else {
     if (is.vector(v)) {
@@ -65,7 +66,7 @@ GCElinearModel <- function (y, X, Z, v, nu, p0, w0, m=6, gtol=0.9, invisible=1,
       if (len_v == 1) {
         dimV <- v
         sd_y <- sd(y)
-        v <- seq(from = -3 * sd_y, to = 3 * sd_y, length.out = dimV)
+        v <- seq(from = -k.sigma * sd_y, to = k.sigma * sd_y, length.out = dimV)
       }
       else if (len_v > 1) {
         dimV <- len_v

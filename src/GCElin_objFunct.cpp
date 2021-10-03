@@ -3,7 +3,6 @@
 // [[Rcpp::depends(RcppEigen)]]
 #include <RcppEigen.h>
 
-
 #ifndef BEGIN_RCPP
 #define BEGIN_RCPP
 #endif

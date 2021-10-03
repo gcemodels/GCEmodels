@@ -12,6 +12,7 @@ GCElinearModel(
   nu,
   p0,
   w0,
+  k.sigma = 3,
   m = 6,
   gtol = 0.9,
   invisible = 1,
@@ -25,13 +26,15 @@ GCElinearModel(
 
 \item{Z}{numeric, An (KxM) matrix representing support spaces the for regression coefficients where M is the dimension of the support spaces.}
 
-\item{v}{An optional argument representing a support space for error terms: (a) if missing then v is a (5x1) vector of equally spaced points in [a,b] interval; (b) if a scalar (e.g. H) then v is a (Hx1) vector of equally spaced points in [a,b] interval; (c) can be a user-supplied vector; (d) can be a user-supplied matrix. Please note that in case (a) and (b) the [a,b] interval is centered around zero, and a and b are calculated using the empirical three-sigma rule Pukelsheim (1994)..}
+\item{v}{An optional argument representing a support space for error terms: (a) if missing then v is a (5x1) vector of equally spaced points in [a,b] interval; (b) if a scalar (e.g. H) then v is a (Hx1) vector of equally spaced points in [a,b] interval; (c) can be a user-supplied vector; (d) can be a user-supplied matrix. Please note that in case (a) and (b) the [a,b] interval is centered around zero, and a and b are calculated using the empirical three-sigma rule Pukelsheim (1994).}
 
 \item{nu}{numeric, optional: A weight parameter representing the trade-off between prediction and precision.}
 
 \item{p0}{numeric, optional: Prior probabilities associated with the regression coefficients}
 
 \item{w0}{numeric, optional: Prior probabilities associated with the error terms}
+
+\item{k.sigma}{Implement the k-sigma rule}
 
 \item{m}{m}
 
