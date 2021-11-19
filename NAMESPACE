@@ -1,4 +1,4 @@
-useDynLib(ProvaProjEigen, .registration = TRUE)
+useDynLib(GCEmodels, .registration = TRUE)
 
 importFrom(Rcpp, evalCpp)
 exportPattern("^[[:alpha:]]+")

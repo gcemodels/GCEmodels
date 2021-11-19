@@ -3,27 +3,27 @@
 
 #' @export
 GCElin_gradFunct <- function() {
-    .Call(`_ProvaProjEigen_GCElin_gradFunct`)
+    .Call(`_GCEmodels_GCElin_gradFunct`)
 }
 
 #' @export
 GCElin_objFunct <- function() {
-    .Call(`_ProvaProjEigen_GCElin_objFunct`)
+    .Call(`_GCEmodels_GCElin_objFunct`)
 }
 
 rcppeigen_hello_world <- function() {
-    .Call(`_ProvaProjEigen_rcppeigen_hello_world`)
+    .Call(`_GCEmodels_rcppeigen_hello_world`)
 }
 
 rcppeigen_outerproduct <- function(x) {
-    .Call(`_ProvaProjEigen_rcppeigen_outerproduct`, x)
+    .Call(`_GCEmodels_rcppeigen_outerproduct`, x)
 }
 
 rcppeigen_innerproduct <- function(x) {
-    .Call(`_ProvaProjEigen_rcppeigen_innerproduct`, x)
+    .Call(`_GCEmodels_rcppeigen_innerproduct`, x)
 }
 
 rcppeigen_bothproducts <- function(x) {
-    .Call(`_ProvaProjEigen_rcppeigen_bothproducts`, x)
+    .Call(`_GCEmodels_rcppeigen_bothproducts`, x)
 }
 

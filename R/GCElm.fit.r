@@ -11,6 +11,7 @@
 #' @param w0 numeric, optional: Prior probabilities associated with the error terms
 #' @param m m
 #' @param gtol gtol
+#' @param max_linesearch The maximum number of trials for the line search.This parameter controls the number of function and gradients evaluations per iteration for the line search routine. The default value is 20.
 #' @param invisible invisible
 #' @param linesearch linesearch
 #' @details Mettere qui eventuali details.
@@ -37,7 +38,7 @@
 #' X <- matrix(runif(N*K), nrow = N, ncol = K)
 #' X <- cbind(rep(1, N), X)
 #' Z <- matrix(rep(c(-1, -0.5, 0, 0.5, 1), K+1), nrow = K+1, byrow = TRUE)
-#' GCEfit <- GCElinearModel(y, X, Z, linesearch="LBFGS_LINESEARCH_BACKTRACKING")
+#' GCEfit <- GCElm.fit(y, X, Z, linesearch="LBFGS_LINESEARCH_BACKTRACKING")
 #' data.frame(beta = GCEfit$beta,
 #'            beta_lb = GCEfit$beta-1.96*sqrt(diag(GCEfit$var_beta)),
 #'            beta_ub = GCEfit$beta+1.96*sqrt(diag(GCEfit$var_beta))
@@ -49,8 +50,10 @@
 #' @importFrom Rcpp evalCpp
 #' @useDynLib GCEmodels, .registration=TRUE
 
-GCElinearModel <- function (y, X, Z, v, nu, p0, w0, k.sigma=3, m=6, gtol=0.9, invisible=1,
-                                 linesearch = "LBFGS_LINESEARCH_DEFAULT") {
+GCElm.fit <- function (y, X, Z, v, nu, p0, w0, k.sigma=3, m=6, gtol=0.9, 
+                            max_linesearch = 20,
+                            invisible=1,
+                            linesearch = "LBFGS_LINESEARCH_DEFAULT") {
   dimX <- dim(X)
   N <- dimX[1]
   K <- dimX[2]
@@ -98,7 +101,8 @@ GCElinearModel <- function (y, X, Z, v, nu, p0, w0, k.sigma=3, m=6, gtol=0.9, in
   gce_optim <- lbfgs::lbfgs(call_eval=GCElin_objFunct(), 
                      call_grad=GCElin_gradFunct(), 
                      vars = lambda0, environment=env,
-                     m=m, gtol=gtol, invisible=invisible,
+                     m=m, gtol=gtol, max_linesearch=max_linesearch,
+                     invisible=invisible,
                      linesearch_algorithm = linesearch)
   lambda_hat <- gce_optim$par
   p <- matrix(0, K, M)

@@ -1,24 +1,24 @@
-\name{ProvaProjEigen-package}
-\alias{ProvaProjEigen-package}
-\alias{ProvaProjEigen}
+\name{GCEmodels-package}
+\alias{GCEmodels-package}
+\alias{GCEmodels}
 \docType{package}
 \title{
-\packageTitle{ProvaProjEigen}
+\packageTitle{GCEmodels}
 }
 \description{
-\packageDescription{ProvaProjEigen}
+\packageDescription{GCEmodels}
 }
 \details{
 
 The DESCRIPTION file:
-\packageDESCRIPTION{ProvaProjEigen}
-\packageIndices{ProvaProjEigen}
+\packageDESCRIPTION{GCEmodels}
+\packageIndices{GCEmodels}
 An overview of how to use the package, including the most important functions
 }
 \author{
-\packageAuthor{ProvaProjEigen}
+\packageAuthor{GCEmodels}
 
-Maintainer: \packageMaintainer{ProvaProjEigen}
+Maintainer: \packageMaintainer{GCEmodels}
 }
 \references{
 Literature or other references for background information

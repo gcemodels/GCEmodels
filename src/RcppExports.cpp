@@ -13,7 +13,7 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 
 // GCElin_gradFunct
 SEXP GCElin_gradFunct();
-RcppExport SEXP _ProvaProjEigen_GCElin_gradFunct() {
+RcppExport SEXP _GCEmodels_GCElin_gradFunct() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     rcpp_result_gen = Rcpp::wrap(GCElin_gradFunct());
@@ -22,7 +22,7 @@ END_RCPP
 }
 // GCElin_objFunct
 SEXP GCElin_objFunct();
-RcppExport SEXP _ProvaProjEigen_GCElin_objFunct() {
+RcppExport SEXP _GCEmodels_GCElin_objFunct() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     rcpp_result_gen = Rcpp::wrap(GCElin_objFunct());
@@ -31,7 +31,7 @@ END_RCPP
 }
 // rcppeigen_hello_world
 Eigen::MatrixXd rcppeigen_hello_world();
-RcppExport SEXP _ProvaProjEigen_rcppeigen_hello_world() {
+RcppExport SEXP _GCEmodels_rcppeigen_hello_world() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -41,7 +41,7 @@ END_RCPP
 }
 // rcppeigen_outerproduct
 Eigen::MatrixXd rcppeigen_outerproduct(const Eigen::VectorXd& x);
-RcppExport SEXP _ProvaProjEigen_rcppeigen_outerproduct(SEXP xSEXP) {
+RcppExport SEXP _GCEmodels_rcppeigen_outerproduct(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -52,7 +52,7 @@ END_RCPP
 }
 // rcppeigen_innerproduct
 double rcppeigen_innerproduct(const Eigen::VectorXd& x);
-RcppExport SEXP _ProvaProjEigen_rcppeigen_innerproduct(SEXP xSEXP) {
+RcppExport SEXP _GCEmodels_rcppeigen_innerproduct(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -63,7 +63,7 @@ END_RCPP
 }
 // rcppeigen_bothproducts
 Rcpp::List rcppeigen_bothproducts(const Eigen::VectorXd& x);
-RcppExport SEXP _ProvaProjEigen_rcppeigen_bothproducts(SEXP xSEXP) {
+RcppExport SEXP _GCEmodels_rcppeigen_bothproducts(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -74,16 +74,16 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_ProvaProjEigen_GCElin_gradFunct", (DL_FUNC) &_ProvaProjEigen_GCElin_gradFunct, 0},
-    {"_ProvaProjEigen_GCElin_objFunct", (DL_FUNC) &_ProvaProjEigen_GCElin_objFunct, 0},
-    {"_ProvaProjEigen_rcppeigen_hello_world", (DL_FUNC) &_ProvaProjEigen_rcppeigen_hello_world, 0},
-    {"_ProvaProjEigen_rcppeigen_outerproduct", (DL_FUNC) &_ProvaProjEigen_rcppeigen_outerproduct, 1},
-    {"_ProvaProjEigen_rcppeigen_innerproduct", (DL_FUNC) &_ProvaProjEigen_rcppeigen_innerproduct, 1},
-    {"_ProvaProjEigen_rcppeigen_bothproducts", (DL_FUNC) &_ProvaProjEigen_rcppeigen_bothproducts, 1},
+    {"_GCEmodels_GCElin_gradFunct", (DL_FUNC) &_GCEmodels_GCElin_gradFunct, 0},
+    {"_GCEmodels_GCElin_objFunct", (DL_FUNC) &_GCEmodels_GCElin_objFunct, 0},
+    {"_GCEmodels_rcppeigen_hello_world", (DL_FUNC) &_GCEmodels_rcppeigen_hello_world, 0},
+    {"_GCEmodels_rcppeigen_outerproduct", (DL_FUNC) &_GCEmodels_rcppeigen_outerproduct, 1},
+    {"_GCEmodels_rcppeigen_innerproduct", (DL_FUNC) &_GCEmodels_rcppeigen_innerproduct, 1},
+    {"_GCEmodels_rcppeigen_bothproducts", (DL_FUNC) &_GCEmodels_rcppeigen_bothproducts, 1},
     {NULL, NULL, 0}
 };
 
-RcppExport void R_init_ProvaProjEigen(DllInfo *dll) {
+RcppExport void R_init_GCEmodels(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 }
