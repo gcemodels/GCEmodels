@@ -3,5 +3,6 @@ useDynLib(GCEmodels, .registration = TRUE)
 importFrom(Rcpp, evalCpp)
 exportPattern("^[[:alpha:]]+")
 importFrom(lbfgs,lbfgs)
-importFrom(stats,qchisq)
-importFrom(stats,sd)
+importFrom("stats","qchisq","sd")
+importFrom("stats", ".getXlevels", "is.empty.model", "model.matrix",
+           "model.offset", "model.response", "model.weights")

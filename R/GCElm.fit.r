@@ -1,5 +1,6 @@
-#' Linear Regression Model
+#' Generalized Cross Entropy Linear Regression Models
 #'
+#' @description Fitting generalized cross entropy (GCE) linear models
 #' @author Marco Sandri, Enrico Ciavolino, Maurizio Carpita (\email{gcemodels@gmail.com})
 #' @param y numeric, n (Nx1) vector representing the dependent variable where N is the number of observations.
 #' @param X numeric, n (NxK) matrix representing a set of independent variables where K is number of regressors.
@@ -7,13 +8,9 @@
 #' @param v An optional argument representing a support space for error terms: (a) if missing then v is a (5x1) vector of equally spaced points in [a,b] interval; (b) if a scalar (e.g. H) then v is a (Hx1) vector of equally spaced points in [a,b] interval; (c) can be a user-supplied vector; (d) can be a user-supplied matrix. Please note that in case (a) and (b) the [a,b] interval is centered around zero, and a and b are calculated using the empirical three-sigma rule Pukelsheim (1994).
 #' @param k.sigma Implement the k-sigma rule
 #' @param nu numeric, optional: A weight parameter representing the trade-off between prediction and precision.
-#' @param p0 numeric, optional: Prior probabilities associated with the regression coefficients
-#' @param w0 numeric, optional: Prior probabilities associated with the error terms
-#' @param m m
-#' @param gtol gtol
-#' @param max_linesearch The maximum number of trials for the line search.This parameter controls the number of function and gradients evaluations per iteration for the line search routine. The default value is 20.
-#' @param invisible invisible
-#' @param linesearch linesearch
+#' @param p0 numeric, optional: Prior probabilities associated with the regression coefficients.
+#' @param w0 numeric, optional: Prior probabilities associated with the error terms.
+#' @param control list, a list of parameters for controlling the fitting process; for GCElm.fit this is passed to \code{\link{GCElm.control}}.
 #' @details Mettere qui eventuali details.
 #' @return A \code{list} with the following elements:
 #' @return * \code{lambda}, estimated lagrange multipliers
@@ -32,13 +29,13 @@
 #' @references Golan (1996)
 #' @examples
 #' set.seed(1234)
-#' N <- 25000
+#' N <- 5000
 #' K <- 10
 #' y <- runif(N)
 #' X <- matrix(runif(N*K), nrow = N, ncol = K)
 #' X <- cbind(rep(1, N), X)
-#' Z <- matrix(rep(c(-1, -0.5, 0, 0.5, 1), K+1), nrow = K+1, byrow = TRUE)
-#' GCEfit <- GCElm.fit(y, X, Z, linesearch="LBFGS_LINESEARCH_BACKTRACKING")
+#' Z <- matrix(rep(c(-100, 50, 0, 50, 100), K+1), nrow = K+1, byrow = TRUE)
+#' GCEfit <- GCElm.fit(y, X, Z)
 #' data.frame(beta = GCEfit$beta,
 #'            beta_lb = GCEfit$beta-1.96*sqrt(diag(GCEfit$var_beta)),
 #'            beta_ub = GCEfit$beta+1.96*sqrt(diag(GCEfit$var_beta))
@@ -50,10 +47,8 @@
 #' @importFrom Rcpp evalCpp
 #' @useDynLib GCEmodels, .registration=TRUE
 
-GCElm.fit <- function (y, X, Z, v, nu, p0, w0, k.sigma=3, m=6, gtol=0.9, 
-                            max_linesearch = 20,
-                            invisible=1,
-                            linesearch = "LBFGS_LINESEARCH_DEFAULT") {
+GCElm.fit <- function(y, X, Z, v, nu, p0, w0, k.sigma=3, control=GCElm.control()) {
+  control <- do.call("GCElm.control", control)
   dimX <- dim(X)
   N <- dimX[1]
   K <- dimX[2]
@@ -101,9 +96,10 @@ GCElm.fit <- function (y, X, Z, v, nu, p0, w0, k.sigma=3, m=6, gtol=0.9,
   gce_optim <- lbfgs::lbfgs(call_eval=GCElin_objFunct(), 
                      call_grad=GCElin_gradFunct(), 
                      vars = lambda0, environment=env,
-                     m=m, gtol=gtol, max_linesearch=max_linesearch,
-                     invisible=invisible,
-                     linesearch_algorithm = linesearch)
+                     m=control$m, gtol=control$gtol, 
+                     max_linesearch=control$max_linesearch,
+                     invisible=control$invisible,
+                     linesearch_algorithm = control$linesearch_algorithm)
   lambda_hat <- gce_optim$par
   p <- matrix(0, K, M)
   Omega <- rep(0, K)
@@ -176,7 +172,7 @@ GCElm.fit <- function (y, X, Z, v, nu, p0, w0, k.sigma=3, m=6, gtol=0.9,
   info_estim_all <- list(lambda = lambda_hat, beta = beta_hat, 
                          var_beta = var_beta, p = p, w = w, e = e, Sp = Sp, S_pk = S_pk, 
                          H_p_w = gce_optim$H, dH = dH, ER = ER, Pseudo_R2 = R2, 
-                         conv = gce_optim$convergence, optim=gce_optim)
+                         converged = gce_optim$convergence, class="GCElm", optim=gce_optim)
   return(info_estim_all)
 }
 

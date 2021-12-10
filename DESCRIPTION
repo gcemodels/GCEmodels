@@ -12,3 +12,4 @@ Imports: Rcpp (>= 1.0.7),
          lbfgs (>= 1.2.1)
 LinkingTo: Rcpp, RcppEigen
 RoxygenNote: 7.1.2
+Roxygen: list(old_usage = TRUE)
