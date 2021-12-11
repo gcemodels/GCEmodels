@@ -4,28 +4,37 @@
 #' @author Marco Sandri, Enrico Ciavolino, Maurizio Carpita (\email{gcemodels@gmail.com})
 #' @param y numeric, n (Nx1) vector representing the dependent variable where N is the number of observations.
 #' @param X numeric, n (NxK) matrix representing a set of independent variables where K is number of regressors.
-#' @param Z numeric, An (KxM) matrix representing support spaces the for regression coefficients where M is the dimension of the support spaces.
-#' @param v An optional argument representing a support space for error terms: (a) if missing then v is a (5x1) vector of equally spaced points in [a,b] interval; (b) if a scalar (e.g. H) then v is a (Hx1) vector of equally spaced points in [a,b] interval; (c) can be a user-supplied vector; (d) can be a user-supplied matrix. Please note that in case (a) and (b) the [a,b] interval is centered around zero, and a and b are calculated using the empirical three-sigma rule Pukelsheim (1994).
-#' @param k.sigma Implement the k-sigma rule
-#' @param nu numeric, optional: A weight parameter representing the trade-off between prediction and precision.
-#' @param p0 numeric, optional: Prior probabilities associated with the regression coefficients.
-#' @param w0 numeric, optional: Prior probabilities associated with the error terms.
-#' @param control list, a list of parameters for controlling the fitting process; for GCElm.fit this is passed to \code{\link{GCElm.control}}.
+#' @param Z numeric, an (KxM) matrix representing support spaces the for regression coefficients where M is the dimension of the support spaces.
+#' @param v numeric, an optional argument representing a support space for error terms: 
+#' \describe{
+#'  \item{(a)}{if missing then \code{v} is a (5x1) vector of equally spaced points in [a,b] interval;}
+#'  \item{(b)}{if a scalar (e.g. H) then \code{v} is a (Hx1) vector of equally spaced points in [a,b] interval;}
+#'  \item{(c)}{can be a user-supplied vector;}
+#'  \item{(d)}{can be a user-supplied matrix.}
+#' }
+#' Please note that in case (a) and (b) the [a,b] interval is centered around zero, and a and b are calculated using the empirical three-sigma rule Pukelsheim (1994).
+#' @param nu numeric, an optional weight parameter representing the trade-off between prediction and precision.
+#' @param p0 numeric, optional prior probabilities associated with the regression coefficients.
+#' @param w0 numeric, optional prior probabilities associated with the error terms.
+#' @param k.sigma numeric, coefficient \code{k} in the k-sigma rule (default \code{k=3}).
+#' @param control list, a list of parameters for controlling the fitting process; for \code{GCElm.fit} this is passed to \code{\link{GCElm.control}}.
 #' @details Mettere qui eventuali details.
 #' @return A \code{list} with the following elements:
-#' @return * \code{lambda}, estimated lagrange multipliers
-#' @return * \code{beta}, regression coefficients
-#' @return * \code{var_beta}, variance-covariance matrix of the regression coefficients
-#' @return * \code{p}, estimated probabilities associated with the regressions coefficients
-#' @return * \code{w}, estimated probabilities associated with the error terms
-#' @return * \code{e}, estimated residuals
-#' @return * \code{Sp}, the (signal) information of the whole system
-#' @return * \code{Sp_k}, the (signal) information associated with the k-th regression coefficient
-#' @return * \code{H_p_w}, value of the joint entropies of p and w at the final iteration
-#' @return * \code{dH}, delta-H from the Entropy Concentration Theorem
-#' @return * \code{ER}, entropy-ratio statistic
-#' @return * \code{Pseudo-R2}, pseudo R-squared
-#' @return * \code{conv}, convergence (same as in the \code{lbfgs} function) 
+#' \itemize{
+#'  \item{\code{lambda}, estimated lagrange multipliers;}
+#'  \item{\code{beta}, regression coefficients;}
+#'  \item{\code{var_beta}, variance-covariance matrix of the regression coefficients;}
+#'  \item{\code{p}, estimated probabilities associated with the regressions coefficients;}
+#'  \item{\code{w}, estimated probabilities associated with the error terms;}
+#'  \item{\code{e}, estimated residuals;}
+#'  \item{\code{Sp}, the (signal) information of the whole system;}
+#'  \item{\code{Sp_k}, the (signal) information associated with the k-th regression coefficient;}
+#'  \item{\code{H_p_w}, value of the joint entropies of p and w at the final iteration;}
+#'  \item{\code{dH}, delta-H from the Entropy Concentration Theorem;}
+#'  \item{\code{ER}, entropy-ratio statistic;}
+#'  \item{\code{Pseudo-R2}, pseudo R-squared;}
+#'  \item{\code{converged}, convergence (same as in the \code{lbfgs} function).}
+#' }
 #' @references Golan (1996)
 #' @examples
 #' set.seed(1234)

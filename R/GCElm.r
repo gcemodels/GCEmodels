@@ -6,11 +6,18 @@
 #' @param formula an object of class "formula" (or one that can be coerced to that class); a symbolic description of the model to be fitted. The details of model specification are given under ‘Details’.
 #' @param data an optional data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which GCElm is called.
 #' @param Z numeric, an (KxM) matrix representing support spaces the for regression coefficients where M is the dimension of the support spaces.
-#' @param v numeric, an optional argument representing a support space for error terms: (a) if missing then v is a (5x1) vector of equally spaced points in [a,b] interval; (b) if a scalar (e.g. H) then v is a (Hx1) vector of equally spaced points in [a,b] interval; (c) can be a user-supplied vector; (d) can be a user-supplied matrix. Please note that in case (a) and (b) the [a,b] interval is centered around zero, and a and b are calculated using the empirical three-sigma rule Pukelsheim (1994).
-#' @param nu numeric, optional; a weight parameter representing the trade-off between prediction and precision.
-#' @param p0 numeric, optional; prior probabilities associated with the regression coefficients.
-#' @param w0 numeric, optional; prior probabilities associated with the error terms.
-#' @param k.sigma numeric, implement the k-sigma rule
+#' @param v numeric, an optional argument representing a support space for error terms: 
+#' \describe{
+#'  \item{(a)}{if missing then \code{v} is a (5x1) vector of equally spaced points in [a,b] interval;}
+#'  \item{(b)}{if a scalar (e.g. H) then \code{v} is a (Hx1) vector of equally spaced points in [a,b] interval;}
+#'  \item{(c)}{can be a user-supplied vector;}
+#'  \item{(d)}{can be a user-supplied matrix.}
+#' }
+#' Please note that in case (a) and (b) the [a,b] interval is centered around zero, and a and b are calculated using the empirical three-sigma rule Pukelsheim (1994).
+#' @param nu numeric, an optional weight parameter representing the trade-off between prediction and precision.
+#' @param p0 numeric, optional prior probabilities associated with the regression coefficients.
+#' @param w0 numeric, optional prior probabilities associated with the error terms.
+#' @param k.sigma numeric, coefficient \code{k} in the k-sigma rule (default \code{k=3}).
 #' @param weights an optional vector of ‘prior weights’ to be used in the fitting process; should be NULL or a numeric vector.
 #' @param subset an optional vector specifying a subset of observations to be used in the fitting process.
 #' @param na.action a function which indicates what should happen when the data contain NAs; the default is set by the na.action setting of options, and is na.fail if that is unset; the ‘factory-fresh’ default is na.omit; another possible value is NULL, no action; value na.exclude can be useful.

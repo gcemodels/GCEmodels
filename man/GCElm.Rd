@@ -15,15 +15,22 @@ GCElm(formula, data, Z, v, nu, p0, w0, k.sigma = 3, weights, subset,
 
 \item{Z}{numeric, an (KxM) matrix representing support spaces the for regression coefficients where M is the dimension of the support spaces.}
 
-\item{v}{numeric, an optional argument representing a support space for error terms: (a) if missing then v is a (5x1) vector of equally spaced points in [a,b] interval; (b) if a scalar (e.g. H) then v is a (Hx1) vector of equally spaced points in [a,b] interval; (c) can be a user-supplied vector; (d) can be a user-supplied matrix. Please note that in case (a) and (b) the [a,b] interval is centered around zero, and a and b are calculated using the empirical three-sigma rule Pukelsheim (1994).}
+\item{v}{numeric, an optional argument representing a support space for error terms: 
+\describe{
+ \item{(a)}{if missing then \code{v} is a (5x1) vector of equally spaced points in [a,b] interval;}
+ \item{(b)}{if a scalar (e.g. H) then \code{v} is a (Hx1) vector of equally spaced points in [a,b] interval;}
+ \item{(c)}{can be a user-supplied vector;}
+ \item{(d)}{can be a user-supplied matrix.}
+}
+Please note that in case (a) and (b) the [a,b] interval is centered around zero, and a and b are calculated using the empirical three-sigma rule Pukelsheim (1994).}
 
-\item{nu}{numeric, optional; a weight parameter representing the trade-off between prediction and precision.}
+\item{nu}{numeric, an optional weight parameter representing the trade-off between prediction and precision.}
 
-\item{p0}{numeric, optional; prior probabilities associated with the regression coefficients.}
+\item{p0}{numeric, optional prior probabilities associated with the regression coefficients.}
 
-\item{w0}{numeric, optional; prior probabilities associated with the error terms.}
+\item{w0}{numeric, optional prior probabilities associated with the error terms.}
 
-\item{k.sigma}{numeric, implement the k-sigma rule}
+\item{k.sigma}{numeric, coefficient \code{k} in the k-sigma rule (default \code{k=3}).}
 
 \item{weights}{an optional vector of ‘prior weights’ to be used in the fitting process; should be NULL or a numeric vector.}
 
