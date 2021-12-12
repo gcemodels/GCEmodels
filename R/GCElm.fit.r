@@ -3,8 +3,8 @@
 #' @description Fitting generalized cross entropy (GCE) linear models
 #' @author Marco Sandri, Enrico Ciavolino, Maurizio Carpita (\email{gcemodels@gmail.com})
 #' @param y numeric, n (Nx1) vector representing the dependent variable where N is the number of observations.
-#' @param X numeric, n (NxK) matrix representing a set of independent variables where K is number of regressors.
-#' @param Z numeric, an (KxM) matrix representing support spaces the for regression coefficients where M is the dimension of the support spaces.
+#' @param X numeric, n (NxK) matrix representing a set of independent variables where K is the number of regressors.
+#' @param Z numeric, an (KxM) matrix representing support spaces for the regression coefficients (including intercept) where M is the dimension of the support spaces.
 #' @param v numeric, an optional argument representing a support space for error terms: 
 #' \describe{
 #'  \item{(a)}{if missing then \code{v} is a (5x1) vector of equally spaced points in [a,b] interval;}
@@ -22,7 +22,7 @@
 #' @return A \code{list} with the following elements:
 #' \itemize{
 #'  \item{\code{lambda}, estimated lagrange multipliers;}
-#'  \item{\code{beta}, regression coefficients;}
+#'  \item{\code{coefficients}, regression coefficients;}
 #'  \item{\code{var_beta}, variance-covariance matrix of the regression coefficients;}
 #'  \item{\code{p}, estimated probabilities associated with the regressions coefficients;}
 #'  \item{\code{w}, estimated probabilities associated with the error terms;}
@@ -33,7 +33,7 @@
 #'  \item{\code{dH}, delta-H from the Entropy Concentration Theorem;}
 #'  \item{\code{ER}, entropy-ratio statistic;}
 #'  \item{\code{Pseudo-R2}, pseudo R-squared;}
-#'  \item{\code{converged}, convergence (same as in the \code{lbfgs} function).}
+#'  \item{\code{converged}, convergence (same as in the \code{\link[lbfgs]{lbfgs}} function).}
 #' }
 #' @references Golan (1996)
 #' @examples
@@ -45,10 +45,7 @@
 #' X <- cbind(rep(1, N), X)
 #' Z <- matrix(rep(c(-100, 50, 0, 50, 100), K+1), nrow = K+1, byrow = TRUE)
 #' GCEfit <- GCElm.fit(y, X, Z)
-#' data.frame(beta = GCEfit$beta,
-#'            beta_lb = GCEfit$beta-1.96*sqrt(diag(GCEfit$var_beta)),
-#'            beta_ub = GCEfit$beta+1.96*sqrt(diag(GCEfit$var_beta))
-#'            )
+#' (beta = GCEfit$beta)
 #' @export
 #' @importFrom lbfgs lbfgs
 #' @importFrom stats sd
@@ -58,6 +55,18 @@
 
 GCElm.fit <- function(y, X, Z, v, nu, p0, w0, k.sigma=3, control=GCElm.control()) {
   control <- do.call("GCElm.control", control)
+  
+  # Check matrix dimensions
+  if (ncol(X)!=nrow(Z)) {
+    stop(gettextf("matrix Z has %d rows which is not equal to the number of regressors (%d, including intercept)", 
+                  NROW(Z), NCOL(X)), domain = NA)
+  }
+  
+  # Check if a column of all ones is present
+  if (!any(apply(X,2,function(x) all(x==1)))) {
+    X <- cbind(rep(1, nrow(X)), X)
+    warning("a column of all ones was added to matrix X (for intercept estimation)")  
+  }
   dimX <- dim(X)
   N <- dimX[1]
   K <- dimX[2]
@@ -178,7 +187,10 @@ GCElm.fit <- function(y, X, Z, v, nu, p0, w0, k.sigma=3, control=GCElm.control()
   R2 <- 1 - Sp
   CC <- K * (M - 1) + N * (J - 2)
   dH <- stats::qchisq(c(0.9, 0.95, 0.99), df = CC)/(2 * N)
-  info_estim_all <- list(lambda = lambda_hat, beta = beta_hat, 
+  
+  coef <- as.vector(beta_hat)
+  names(coef) <- dimnames(X)[[2L]]
+  info_estim_all <- list(lambda = lambda_hat, coefficients = coef, 
                          var_beta = var_beta, p = p, w = w, e = e, Sp = Sp, S_pk = S_pk, 
                          H_p_w = gce_optim$H, dH = dH, ER = ER, Pseudo_R2 = R2, 
                          converged = gce_optim$convergence, class="GCElm", optim=gce_optim)

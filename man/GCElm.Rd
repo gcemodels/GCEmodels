@@ -13,7 +13,7 @@ GCElm(formula, data, Z, v, nu, p0, w0, k.sigma = 3, weights, subset,
 
 \item{data}{an optional data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which GCElm is called.}
 
-\item{Z}{numeric, an (KxM) matrix representing support spaces the for regression coefficients where M is the dimension of the support spaces.}
+\item{Z}{numeric, an (KxM) matrix representing support spaces for the regression coefficients (including intercept)  where M is the dimension of the support spaces.}
 
 \item{v}{numeric, an optional argument representing a support space for error terms: 
 \describe{
@@ -97,10 +97,7 @@ X <- matrix(runif(N*K), nrow = N, ncol = K)
 data <- data.frame(y = runif(N), X)
 Z <- matrix(rep(c(-10, 5, 0, 5, 10), K+1), nrow = K+1, byrow = TRUE)
 GCEfit <- GCElm(y~., data=data, Z=Z)
-data.frame(beta = GCEfit$beta,
-           beta_lb = GCEfit$beta-1.96*sqrt(diag(GCEfit$var_beta)),
-           beta_ub = GCEfit$beta+1.96*sqrt(diag(GCEfit$var_beta))
-           )
+(beta = GCEfit$beta)
 }
 \references{
 Golan (1996)

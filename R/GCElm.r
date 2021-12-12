@@ -5,7 +5,7 @@
 #' @author Marco Sandri, Enrico Ciavolino, Maurizio Carpita (\email{gcemodels@gmail.com})
 #' @param formula an object of class "formula" (or one that can be coerced to that class); a symbolic description of the model to be fitted. The details of model specification are given under ‘Details’.
 #' @param data an optional data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model. If not found in data, the variables are taken from environment(formula), typically the environment from which GCElm is called.
-#' @param Z numeric, an (KxM) matrix representing support spaces the for regression coefficients where M is the dimension of the support spaces.
+#' @param Z numeric, an (KxM) matrix representing support spaces for the regression coefficients (including intercept)  where M is the dimension of the support spaces.
 #' @param v numeric, an optional argument representing a support space for error terms: 
 #' \describe{
 #'  \item{(a)}{if missing then \code{v} is a (5x1) vector of equally spaced points in [a,b] interval;}
@@ -53,10 +53,7 @@
 #' data <- data.frame(y = runif(N), X)
 #' Z <- matrix(rep(c(-10, 5, 0, 5, 10), K+1), nrow = K+1, byrow = TRUE)
 #' GCEfit <- GCElm(y~., data=data, Z=Z)
-#' data.frame(beta = GCEfit$beta,
-#'            beta_lb = GCEfit$beta-1.96*sqrt(diag(GCEfit$var_beta)),
-#'            beta_ub = GCEfit$beta+1.96*sqrt(diag(GCEfit$var_beta))
-#'            )
+#' (beta = GCEfit$beta)
 #' @export
 #' @importFrom stats model.response
 #' @importFrom stats is.empty.model
@@ -148,13 +145,13 @@ GCElm <- function(formula, data, Z, v, nu, p0, w0, k.sigma=3, weights, subset, n
                    X=X, y=Y, Z=Z, v=v, nu=nu, p0=p0, w0=w0, k.sigma=k.sigma,
                    control=control))
   if (length(offset) && attr(mt, "intercept") > 0L) {
-    fit2 <- eval(call(if (is.function(method)) "method" else method, 
+    fit <- eval(call(if (is.function(method)) "method" else method, 
                       X=X[, "(Intercept)", drop=FALSE], y=Y, Z=Z, v=v, nu=nu, p0=p0, w0=w0, k.sigma=k.sigma,
                       control=control))
   #fit$null.deviance <- fit2$deviance
   }
   if (fit$converged!=0)
-    warning(paste0("The optimization algorithm did not converged (code ", fit$converged,")"))  
+    warning(paste0("the optimization algorithm did not converged (code ", fit$converged,")"))  
   if (model) 
     fit$model <- mf
   fit$na.action <- attr(mf, "na.action")

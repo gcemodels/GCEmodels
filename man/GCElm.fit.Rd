@@ -9,9 +9,9 @@ GCElm.fit(y, X, Z, v, nu, p0, w0, k.sigma = 3, control = GCElm.control())
 \arguments{
 \item{y}{numeric, n (Nx1) vector representing the dependent variable where N is the number of observations.}
 
-\item{X}{numeric, n (NxK) matrix representing a set of independent variables where K is number of regressors.}
+\item{X}{numeric, n (NxK) matrix representing a set of independent variables where K is the number of regressors.}
 
-\item{Z}{numeric, an (KxM) matrix representing support spaces the for regression coefficients where M is the dimension of the support spaces.}
+\item{Z}{numeric, an (KxM) matrix representing support spaces for the regression coefficients (including intercept) where M is the dimension of the support spaces.}
 
 \item{v}{numeric, an optional argument representing a support space for error terms: 
 \describe{
@@ -36,7 +36,7 @@ Please note that in case (a) and (b) the [a,b] interval is centered around zero,
 A \code{list} with the following elements:
 \itemize{
  \item{\code{lambda}, estimated lagrange multipliers;}
- \item{\code{beta}, regression coefficients;}
+ \item{\code{coefficients}, regression coefficients;}
  \item{\code{var_beta}, variance-covariance matrix of the regression coefficients;}
  \item{\code{p}, estimated probabilities associated with the regressions coefficients;}
  \item{\code{w}, estimated probabilities associated with the error terms;}
@@ -47,7 +47,7 @@ A \code{list} with the following elements:
  \item{\code{dH}, delta-H from the Entropy Concentration Theorem;}
  \item{\code{ER}, entropy-ratio statistic;}
  \item{\code{Pseudo-R2}, pseudo R-squared;}
- \item{\code{converged}, convergence (same as in the \code{lbfgs} function).}
+ \item{\code{converged}, convergence (same as in the \code{\link[lbfgs]{lbfgs}} function).}
 }
 }
 \description{
@@ -65,10 +65,7 @@ X <- matrix(runif(N*K), nrow = N, ncol = K)
 X <- cbind(rep(1, N), X)
 Z <- matrix(rep(c(-100, 50, 0, 50, 100), K+1), nrow = K+1, byrow = TRUE)
 GCEfit <- GCElm.fit(y, X, Z)
-data.frame(beta = GCEfit$beta,
-           beta_lb = GCEfit$beta-1.96*sqrt(diag(GCEfit$var_beta)),
-           beta_ub = GCEfit$beta+1.96*sqrt(diag(GCEfit$var_beta))
-           )
+(beta = GCEfit$beta)
 }
 \references{
 Golan (1996)
