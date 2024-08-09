@@ -58,14 +58,15 @@ Mettere qui eventuali details.
 }
 \examples{
 set.seed(1234)
-N <- 5000
+N <- 1000
 K <- 10
-y <- runif(N)
+betas <- c(-1,1,-1,1,0,0,0,0,0,0)
 X <- matrix(runif(N*K), nrow = N, ncol = K)
+y <- X \%*\% betas + rnorm(N)
 X <- cbind(rep(1, N), X)
-Z <- matrix(rep(c(-100, 50, 0, 50, 100), K+1), nrow = K+1, byrow = TRUE)
+Z <- matrix(rep(seq(-10,10,2.5), K+1), nrow = K+1, byrow = TRUE)
 GCEfit <- GCElm.fit(y, X, Z)
-(beta = GCEfit$beta)
+coef(GCEfit)      
 }
 \references{
 Golan (1996)
