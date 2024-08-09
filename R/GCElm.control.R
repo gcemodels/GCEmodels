@@ -17,7 +17,7 @@
 #' y <- runif(N)
 #' X <- matrix(runif(N*K), nrow = N, ncol = K)
 #' X <- cbind(rep(1, N), X)
-#' Z <- matrix(rep(c(-1, -0.5, 0, 0.5, 1), K+1), nrow = K+1, byrow = TRUE)
+#' Z <- matrix(rep(seq(-10,10,2.5), K+1), nrow = K+1, byrow = TRUE)
 #' GCElm_control <- GCElm.control(m=8, gtol=0.95)
 #' GCEfit <- GCElm.fit(y, X, Z, control=GCElm_control)
 #' data.frame(beta = GCEfit$beta,
