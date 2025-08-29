@@ -52,9 +52,9 @@
 #' betas <- c(-1,1,-1,1,0,0,0,0,0,0)
 #' X <- matrix(runif(N*K), nrow = N, ncol = K)
 #' y <- X %*% betas + rnorm(N)
-#' X <- cbind(rep(1, N), X)
 #' Z <- matrix(rep(seq(-10,10,2.5), K+1), nrow = K+1, byrow = TRUE)
-#' GCEfit <- GCElm(y~., data=data, Z=Z)
+#' df <- data.frame(y, X)
+#' GCEfit <- GCElm(y~., data=df, Z=Z)
 #' coef(GCEfit)  
 #' @export
 #' @importFrom stats model.response

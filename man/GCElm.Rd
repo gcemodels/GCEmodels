@@ -91,13 +91,15 @@ Mettere qui eventuali details.
 }
 \examples{
 set.seed(1234)
-N <- 5000
+N <- 1000
 K <- 10
+betas <- c(-1,1,-1,1,0,0,0,0,0,0)
 X <- matrix(runif(N*K), nrow = N, ncol = K)
-data <- data.frame(y = runif(N), X)
-Z <- matrix(rep(c(-10, 5, 0, 5, 10), K+1), nrow = K+1, byrow = TRUE)
-GCEfit <- GCElm(y~., data=data, Z=Z)
-(beta = GCEfit$beta)
+y <- X \%*\% betas + rnorm(N)
+Z <- matrix(rep(seq(-10,10,2.5), K+1), nrow = K+1, byrow = TRUE)
+df <- data.frame(y, X)
+GCEfit <- GCElm(y~., data=df, Z=Z)
+coef(GCEfit)  
 }
 \references{
 Golan (1996)
