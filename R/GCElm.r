@@ -64,7 +64,8 @@
 #' @importFrom stats model.offset
 #' @importFrom stats .getXlevels
 #' @useDynLib GCEmodels, .registration=TRUE 
-
+#' @rawNamespace exportPattern("^[[:alpha:]]+")
+#' 
 GCElm <- function(formula, data, Z, v, nu, p0, w0, k.sigma=3, weights, subset, na.action, 
                   control = list(), model = TRUE, method = "GCElm.fit", x = FALSE, y = TRUE, 
                   offset, contrasts = NULL, ...){
@@ -153,7 +154,7 @@ GCElm <- function(formula, data, Z, v, nu, p0, w0, k.sigma=3, weights, subset, n
   #fit$null.deviance <- fit2$deviance
   }
   if (fit$converged!=0)
-    warning(paste0("the optimization algorithm did not converged (code ", fit$converged,")"))  
+    warning(paste0("The optimization algorithm did not converged (code ", fit$converged,")"))  
   if (model) 
     fit$model <- mf
   fit$na.action <- attr(mf, "na.action")
@@ -161,9 +162,19 @@ GCElm <- function(formula, data, Z, v, nu, p0, w0, k.sigma=3, weights, subset, n
     fit$x <- X
   if (!y) 
     fit$y <- NULL
+  
+  qrX <- base::qr(X)
+  rankX <- qrX$rank
+  df_resid <- NROW(X) - rankX
+  
+  Yhat <- fit$fitted.values
+  
   structure(c(fit, list(call = cal, formula = formula, terms = mt, 
                         data = data, offset = offset, control = control, method = method, 
+                        fitted.values = Yhat, residuals = Yhat - Y,
+                        qr = qrX, df.residual = df_resid, rank = rankX, nu = nu, 
                         contrasts = attr(X, "contrasts"), xlevels = .getXlevels(mt, mf))), 
             class = c(fit$class, c("lm")))
 }
+
 

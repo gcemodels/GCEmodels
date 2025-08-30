@@ -1,15 +1,16 @@
 Package: GCEmodels
 Type: Package
 Title: GCE linear model estimation
-Version: 1.0.1
-Date: 2021-09-18
+Version: 1.0.2
+Date: 2025-08-30
 Author: Marco Sandri
-Maintainer: Who to complain to <yourfault@somewhere.net>
+Maintainer: Who to complain to <sandri.marco@gmail.com>
 Description: More about what it does (maybe more than one line).
 License: GPL (>= 2)
 Encoding: UTF-8
 Imports: Rcpp (>= 1.0.7),
-         lbfgs (>= 1.2.1)
+         lbfgs (>= 1.2.1),
+         stats
 LinkingTo: Rcpp, RcppEigen
 RoxygenNote: 7.3.2
 Roxygen: list(old_usage = TRUE)

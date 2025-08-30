@@ -53,7 +53,7 @@
 #' @importFrom stats qchisq
 #' @importFrom Rcpp evalCpp
 #' @useDynLib GCEmodels, .registration=TRUE
-
+#' 
 GCElm.fit <- function(y, X, Z, v, nu, p0, w0, k.sigma=3, control=GCElm.control()) {
   control <- do.call("GCElm.control", control)
   
@@ -185,15 +185,20 @@ GCElm.fit <- function(y, X, Z, v, nu, p0, w0, k.sigma=3, control=GCElm.control()
     H_U <- -sum(p[k, ] * log(p[k, ]))
     ER[k] <- 2 * H_R - 2 * H_U
   }
-  R2 <- 1 - Sp
+  pseudoR2 <- 1 - Sp
   CC <- K * (M - 1) + N * (J - 2)
   dH <- stats::qchisq(c(0.9, 0.95, 0.99), df = CC)/(2 * N)
   
   coef <- as.vector(beta_hat)
   names(coef) <- dimnames(X)[[2L]]
+  
+  # Fitted values
+  yhat <- X %*% matrix(beta_hat, ncol=1)
+  
   info_estim_all <- list(lambda = lambda_hat, coefficients = coef, 
+                         fitted.values = yhat,
                          var_beta = var_beta, p = p, w = w, e = e, Sp = Sp, S_pk = S_pk, 
-                         H_p_w = gce_optim$H, dH = dH, ER = ER, Pseudo_R2 = R2, 
+                         H_p_w = gce_optim$H, dH = dH, ER = ER, pseudoR2 = pseudoR2, 
                          converged = gce_optim$convergence, class="GCElm", optim=gce_optim)
   return(info_estim_all)
 }
