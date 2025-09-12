@@ -1,8 +1,8 @@
 Package: GCEmodels
 Type: Package
 Title: GCE linear model estimation
-Version: 1.0.2
-Date: 2025-08-30
+Version: 1.0.3
+Date: 2025-09-12
 Author: Marco Sandri
 Maintainer: Who to complain to <sandri.marco@gmail.com>
 Description: More about what it does (maybe more than one line).
@@ -12,5 +12,5 @@ Imports: Rcpp (>= 1.0.7),
          lbfgs (>= 1.2.1),
          stats
 LinkingTo: Rcpp, RcppEigen
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Roxygen: list(old_usage = TRUE)

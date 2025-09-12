@@ -63,8 +63,8 @@
 #' @importFrom stats model.weights
 #' @importFrom stats model.offset
 #' @importFrom stats .getXlevels
+#' @importFrom Rcpp evalCpp
 #' @useDynLib GCEmodels, .registration=TRUE 
-#' @rawNamespace exportPattern("^[[:alpha:]]+")
 #' 
 GCElm <- function(formula, data, Z, v, nu, p0, w0, k.sigma=3, weights, subset, na.action, 
                   control = list(), model = TRUE, method = "GCElm.fit", x = FALSE, y = TRUE, 
