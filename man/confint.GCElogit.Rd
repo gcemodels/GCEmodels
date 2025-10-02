@@ -5,7 +5,8 @@
 \title{Wald confidence intervals for beta = lambda/(1 - nu) from a GCElogit fit
 S3 method for class "GCElogit"}
 \usage{
-\method{confint}{GCElogit}(object, parm = NULL, level = 0.95, ...)
+\method{confint}{GCElogit}(object, parm = NULL, level = 0.95,
+  method = "sandwich", ...)
 }
 \arguments{
 \item{object}{an object of class "gce_mult" returned by gce_mult(), expected to contain:
@@ -15,6 +16,8 @@ and $nu (scalar in (0,1))}
 \item{parm}{a specification of which parameters are to be given confidence intervals, either a vector of numbers or a vector of names. If missing, all parameters are considered}
 
 \item{level}{confidence level (default 0.95)}
+
+\item{method}{character string specifying the type of variance–covariance estimator to be used. Possible values are \code{"sandwich"} for the robust sandwich estimator based on the score contributions (default), and \code{"classic"} for the classical estimator based on the inverse of the observed Hessian matrix. Any other value will result in an error.}
 
 \item{...}{unused, for S3 compatibility}
 }

@@ -6,6 +6,7 @@
 #'        and $nu (scalar in (0,1))
 #' @param parm a specification of which parameters are to be given confidence intervals, either a vector of numbers or a vector of names. If missing, all parameters are considered
 #' @param level confidence level (default 0.95)
+#' @param method character string specifying the type of variance–covariance estimator to be used. Possible values are \code{"sandwich"} for the robust sandwich estimator based on the score contributions (default), and \code{"classic"} for the classical estimator based on the inverse of the observed Hessian matrix. Any other value will result in an error.
 #' @param ... unused, for S3 compatibility
 #' @return a matrix with two columns ("lower","upper") and one row per requested parameter
 #' @examples
@@ -20,7 +21,13 @@
 #' @export
 #'
 #'
-confint.GCElogit <- function(object, parm = NULL, level = 0.95, ...) {
+confint.GCElogit <- function(object, parm = NULL, level = 0.95, method="sandwich", ...) {
+  
+  Vbeta_free <- switch(method,
+                   sandwich = vcov_GCElogit_sandwich(object),
+                   classic  = vcov_GCElogit_classic(object),
+                   stop("Argument 'method' must be either 'sandwich' or 'classic'")
+  )
   Vbeta_free <- vcov_GCElogit_sandwich(object)
   nu   <- object$nu
   lamf <- as.vector(object$lambda[, 2, drop=FALSE])  # J=2 -> una sola colonna libera
@@ -115,6 +122,53 @@ vcov_GCElogit_sandwich <- function(object, use_sum = TRUE) {
 
 
 
+# Calcola vcov sandwich per un oggetto "gce_mult"
+# Var-cov sandwich per GME logit binario (J=2)
+#' @noRd
+vcov_GCElogit_classic <- function(object, h_is_mean = FALSE) {
+  # Richiesti nell'oggetto:
+  #  hess (K x K) = Hessiano del Lagrangiano in lambda
+  #  nu (scalare, costante)
+  #  X  (N x K) solo per assegnare i nomi alle dimensioni
+  stopifnot(!is.null(object$hess), !is.null(object$nu), !is.null(object$X))
+  
+  H  <- 0.5 * (object$hess + t(object$hess))   # simmetrizza per sicurezza
+  nu <- as.numeric(object$nu)
+  N  <- nrow(object$X)
+  
+  # NOTE teorica:
+  # - Se H è la SOMMA delle seconde derivate (log-likelihood/lagrangiano non mediato),
+  #     Var(lambda) ≈ (-H)^(-1).
+  # - Se H è la MEDIA (1/N)*somma, allora Var(lambda) ≈ [-(H * N)]^(-1).
+  #   Per comodità usiamo il flag h_is_mean per risalire al caso "somma".
+  if (h_is_mean) {
+    A <- - H * N
+  } else {
+    A <- - H
+  }
+  
+  # Inversa robusta di A
+  Ainv <- tryCatch(
+    chol2inv(chol(A)),
+    error = function(e) {
+      eg <- eigen(A, symmetric = TRUE)
+      d  <- pmax(eg$values, 1e-12)           # piccolo ridge
+      eg$vectors %*% diag(1/d, length(d)) %*% t(eg$vectors)
+    }
+  )
+  
+  # Var(lambda) classica (Observed Information)
+  Vlam <- Ainv
+  
+  # Trasformazione a beta = lambda / (1 - nu)  (nu costante)
+  Vbeta <- Vlam / (1 - nu)^2
+  
+  # Simmetrizza numericamente e assegna i nomi (dalle colonne di X)
+  Vbeta <- 0.5 * (Vbeta + t(Vbeta))
+  dimnames(Vbeta) <- list(colnames(object$X), colnames(object$X))
+  
+  return(Vbeta)
+}
 
 
 

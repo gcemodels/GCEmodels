@@ -93,7 +93,7 @@
 #' sim3 <- DGPlogit(N=1000, beta=c(0, 1, -1),
 #'                  corr="exp", phi=0.7,
 #'                  target_prevalence=0.25)
-#'#' @seealso \code{\link[stats]{optim}}, \code{\link[stats]{rbinom}}, \code{\link[stats]{qnorm}}
+#' @seealso \code{\link[stats]{optim}}, \code{\link[stats]{rbinom}}, \code{\link[stats]{qnorm}}
 #'
 #' @export
 #' @importFrom stats optim pnorm qlnorm qnorm qunif rbinom rnorm uniroot
