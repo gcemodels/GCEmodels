@@ -91,19 +91,21 @@ vcov_GCElogit_sandwich <- function(object, use_sum = TRUE) {
   pi <- as.numeric(object$p[, 2])
   e  <- as.numeric(object$e[, 2])
   
-  # score per osservazione: S (N x K), riga i = x_i * resid_i
-  resid <- -y + pi + e                         # N-vector
-  S <- X * resid                               # moltiplicazione per riga (riciclo vettoriale)
+  # Per-observation score: S (N x K), 
+  # row i of S = x_i * (y_i - p_i), 
+  # where x_i is the i-th row vector of X
+  resid <- -y + pi + e      # N-vector
+  S <- X * resid         # S <- diag(-y+pi) %*% X
   
   # Bread = H^{-1}
   Hinv <- tryCatch(chol2inv(chol(H)), error = function(e) {
     eg <- eigen(H, symmetric = TRUE); d <- pmax(eg$values, 1e-10)
     eg$vectors %*% diag(1/d, length(d)) %*% t(eg$vectors)
   })
-  
+
   # Meat coerente con H: usa SOMMA (default) o MEDIA per entrambi
   if (use_sum) {
-    Meat <- crossprod(S)            # = t(S) %*% S = sum_i s_i s_i'
+    Meat <- crossprod(S)            # Meat = t(S) %*% S 
     Vlam <- Hinv %*% Meat %*% Hinv
   } else {
     Meat <- crossprod(S) / N

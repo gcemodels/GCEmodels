@@ -50,7 +50,8 @@ No additional checks are performed; \code{optim()} handles them.}
 \value{
 A list with class \code{"GCElogit"} containing:
 \itemize{
-  \item \code{coefficients}: \eqn{K}-vector of slope coefficients \eqn{\beta = \Lambda_{\cdot,2}/(1-\nu)}.
+  \item \code{coefficients}: \eqn{K}-vector of slope coefficients \eqn{\beta = \Lambda/(1-\nu)}, where \eqn{\Lambda} is the vector of lagragian multiplier.
+  \item \code{grad}: Gradient vector \eqn{\nabla \mathcal{L}(\hat \beta)}.
   \item \code{hess}: Hessian matrix returned by \code{optim()}.
   \item \code{p}: \eqn{N \times 2} matrix of posterior class probabilities.
   \item \code{w}: \eqn{N \times 2 \times M} array of error weights.
@@ -61,7 +62,7 @@ A list with class \code{"GCElogit"} containing:
   \item \code{Sp}, \code{S_p_i}, \code{p_e_i}: information measures (entropy-based).
   \item \code{H_p_w}: negative optimized objective value (entropy of \eqn{p} and \eqn{w} parts).
   \item \code{ER}: entropy ratio statistic.
-  \item \code{Pseudo_R2}: pseudo-\eqn{R^2} defined as \eqn{1 - Sp}.
+  \item \code{Pseudo_R2}: pseudo-\eqn{R^2} defined as \eqn{1 - S_p}.
   \item \code{CM}: \eqn{2 \times 2} confusion matrix based on \code{argmax(p + e)}.
   \item \code{optim_convergence}: convergence code from \code{optim()}.
   \item \code{X}, \code{y}: data used for fitting.
@@ -75,16 +76,6 @@ optimized. Class posterior probabilities and latent errors are estimated
 jointly using a finite error support \code{v}.
 }
 \details{
-The model fixes the first column of \eqn{\Lambda} to zero (identification) and
-optimizes the second column only. With linear index \eqn{X \Lambda}, posterior
-class probabilities \eqn{p} are proportional to
-\deqn{p \propto p_0 \odot \exp\{ (X \Lambda) / (1 - \nu) \},}
-normalized by rows. For each observation and class, latent error weights over
-the support \code{v} are updated proportionally to
-\deqn{w_{ijm} \propto w_{0,ijm} \exp\{ (X\Lambda)_{ij} \, v_m / \nu \},}
-then normalized over \eqn{m}, yielding error means
-\eqn{e_{ij} = \sum_m v_m w_{ijm}}.
-
 The objective minimized by \code{optim()} is:
 \deqn{
 \mathcal{L}(\Lambda) =
@@ -97,7 +88,8 @@ The analytic gradient \code{GCElogit_gradFunct()} is used when \code{use_grad = 
 
 Marginal effects are computed using the general formula
 \eqn{\partial p_{ij} / \partial x_k = (p_{ij} / (1-\nu))(\lambda_{kj} - \sum_r \lambda_{kr} p_{ir})}
-and averaged over observations. In the binary case with \eqn{\lambda_{\cdot,1} = 0}
+and averaged over observations. 
+In the binary case with \eqn{\lambda_{\cdot,1} = 0}
 and \eqn{\lambda_{\cdot,2} = \beta}, this simplifies to
 \eqn{\partial p_{i2}/\partial x_k = p_{i1} p_{i2} \beta_k / (1-\nu)} and
 \eqn{\partial p_{i1}/\partial x_k = -\partial p_{i2}/\partial x_k}.
