@@ -1,7 +1,7 @@
 Package: GCEmodels
 Type: Package
 Title: GCE linear model estimation
-Version: 1.0.3
+Version: 1.0.4
 Date: 2025-09-12
 Author: Marco Sandri
 Maintainer: Who to complain to <sandri.marco@gmail.com>

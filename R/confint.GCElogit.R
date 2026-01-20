@@ -21,158 +21,164 @@
 #' @export
 #'
 #'
-confint.GCElogit <- function(object, parm = NULL, level = 0.95, method="sandwich", ...) {
-  
-  Vbeta_free <- switch(method,
-                   sandwich = vcov_GCElogit_sandwich(object),
-                   classic  = vcov_GCElogit_classic(object),
-                   stop("Argument 'method' must be either 'sandwich' or 'classic'")
+confint.GCElogit <- function(object, parm = NULL, level = 0.95,
+                             method = "sandwich", ...) {
+  # Select covariance estimator
+  Vbeta <- switch(
+    method,
+    sandwich = vcov_GCElogit_sandwich(object),
+    classic  = vcov_GCElogit_classic(object),
+    stop("Argument 'method' must be either 'sandwich' or 'classic'.")
   )
-  Vbeta_free <- vcov_GCElogit_sandwich(object)
-  nu   <- object$nu
-  lamf <- as.vector(object$lambda[, 2, drop=FALSE])  # J=2 -> una sola colonna libera
-  betf <- lamf / (1 - nu)
-  se   <- sqrt(pmax(diag(Vbeta_free), 0))
   
-  # nomi parametri
+  # Point estimates: beta = lambda / (1 - nu)
+  nu    <- as.numeric(object$nu)
+  lam   <- as.vector(object$lambda[, 2, drop = FALSE])  # J = 2: single free column
+  beta  <- lam / (1 - nu)
+  
+  # Standard errors
+  se <- sqrt(pmax(diag(Vbeta), 0))
+  
+  # Parameter names
   rn <- rownames(object$lambda)
-  if (is.null(rn)) rn <- paste0("x", seq_along(betf))
+  if (is.null(rn)) rn <- paste0("x", seq_along(beta))
   param_names <- paste0("beta[", rn, "]")
   
-  # selezione parametri come in stats::confint
+  # Parameter selection (stats::confint semantics)
   if (is.null(parm)) {
-    sel <- seq_along(betf)
+    sel <- seq_along(beta)
   } else if (is.numeric(parm)) {
+    if (any(parm < 1 | parm > length(beta)))
+      stop("Parameter indices out of range.")
     sel <- parm
-    if (any(sel < 1 | sel > length(betf)))
-      stop("parm indices out of range.")
   } else if (is.character(parm)) {
     sel <- match(parm, param_names)
-    if (anyNA(sel)) stop("Some 'parm' names not found in parameters.")
+    if (anyNA(sel))
+      stop("Some parameter names were not found.")
   } else {
-    stop("parm must be NULL, numeric indices, or character names.")
+    stop("Argument 'parm' must be NULL, numeric, or character.")
   }
-  
-  # calcolo IC
-  z <- qnorm(0.5 + level/2)
-  lower <- betf[sel] - z * se[sel]
-  upper <- betf[sel] + z * se[sel]
-  
-  out <- cbind(lower = lower, upper = upper)
-  rownames(out) <- param_names[sel]
-  out
+  # Wald confidence intervals
+  z <- qnorm(0.5 + level / 2)
+  ci <- cbind(
+    lower = beta[sel] - z * se[sel],
+    upper = beta[sel] + z * se[sel]
+  )
+  rownames(ci) <- param_names[sel]
+
+  return(ci)
 }
 
 
-
-# Calcola vcov sandwich per un oggetto "gce_mult"
-# Var-cov sandwich per GME logit binario (J=2)
+# Classical (model-based) vcov for GCE/GME binary logit (J = 2)
+# Returns Var(beta) where beta = lambda / (1 - nu), treating nu as fixed.
 #' @noRd
-vcov_GCElogit_sandwich <- function(object, use_sum = TRUE) {
-  # Richiesti nell'oggetto:
-  #  lambda (K x 2), hess (K x K) sui liberi, nu (scalare),
-  #  X (N x K), Y (N) o (N x 2), p (N x 2), e (N x 2)
-  stopifnot(!is.null(object$lambda), !is.null(object$hess),
-            !is.null(object$nu), !is.null(object$X),
-            !is.null(object$Y), !is.null(object$p), !is.null(object$e))
-  
-  lambda <- object$lambda
-  H  <- 0.5 * (object$hess + t(object$hess))   # simmetrizza
-  nu <- object$nu
-  X  <- object$X                                # N x K
-  N  <- nrow(X); K <- ncol(X)
-  
-  # y_i (successo), pi_i, e_i per la classe non-base (colonna 2)
-  if (is.matrix(object$Y)) {
-    y <- as.numeric(object$Y[, 2])
-  } else {
-    y <- as.numeric(object$Y)
-  }
-  pi <- as.numeric(object$p[, 2])
-  e  <- as.numeric(object$e[, 2])
-  
-  # Per-observation score: S (N x K), 
-  # row i of S = x_i * (y_i - p_i), 
-  # where x_i is the i-th row vector of X
-  resid <- -y + pi + e      # N-vector
-  S <- X * resid         # S <- diag(-y+pi) %*% X
-  
-  # Bread = H^{-1}
-  Hinv <- tryCatch(chol2inv(chol(H)), error = function(e) {
-    eg <- eigen(H, symmetric = TRUE); d <- pmax(eg$values, 1e-10)
-    eg$vectors %*% diag(1/d, length(d)) %*% t(eg$vectors)
-  })
-
-  # Meat coerente con H: usa SOMMA (default) o MEDIA per entrambi
-  if (use_sum) {
-    Meat <- crossprod(S)            # Meat = t(S) %*% S 
-    Vlam <- Hinv %*% Meat %*% Hinv
-  } else {
-    Meat <- crossprod(S) / N
-    Hbar <- H / N
-    Hbar_inv <- tryCatch(chol2inv(chol(Hbar)), error = function(e) {
-      eg <- eigen(Hbar, symmetric = TRUE); d <- pmax(eg$values, 1e-10)
-      eg$vectors %*% diag(1/d, length(d)) %*% t(eg$vectors)
-    })
-    Vlam <- Hbar_inv %*% Meat %*% Hbar_inv
-  }
-  
-  # Var(beta) con beta = lambda/(1-nu)
-  Vbeta <- Vlam / (1 - nu)^2
-  Vbeta
-}
-
-
-
-# Calcola vcov sandwich per un oggetto "gce_mult"
-# Var-cov sandwich per GME logit binario (J=2)
-#' @noRd
-vcov_GCElogit_classic <- function(object, h_is_mean = FALSE) {
-  # Richiesti nell'oggetto:
-  #  hess (K x K) = Hessiano del Lagrangiano in lambda
-  #  nu (scalare, costante)
-  #  X  (N x K) solo per assegnare i nomi alle dimensioni
+vcov_GCElogit_classic <- function(object, use_sum = TRUE) {
+  # Expected fields:
+  #   hess : (K x K) Hessian w.r.t. lambda
+  #   nu   : scalar
+  #   X    : (N x K), used for dimension names
   stopifnot(!is.null(object$hess), !is.null(object$nu), !is.null(object$X))
   
-  H  <- 0.5 * (object$hess + t(object$hess))   # simmetrizza per sicurezza
+  X  <- object$X
+  N  <- nrow(X)
   nu <- as.numeric(object$nu)
-  N  <- nrow(object$X)
   
-  # NOTE teorica:
-  # - Se H è la SOMMA delle seconde derivate (log-likelihood/lagrangiano non mediato),
-  #     Var(lambda) ≈ (-H)^(-1).
-  # - Se H è la MEDIA (1/N)*somma, allora Var(lambda) ≈ [-(H * N)]^(-1).
-  #   Per comodità usiamo il flag h_is_mean per risalire al caso "somma".
-  if (h_is_mean) {
-    A <- - H * N
-  } else {
-    A <- - H
-  }
+  # Symmetrise for numerical stability
+  H <- 0.5 * (object$hess + t(object$hess))
   
-  # Inversa robusta di A
-  Ainv <- tryCatch(
-    chol2inv(chol(A)),
-    error = function(e) {
-      eg <- eigen(A, symmetric = TRUE)
-      d  <- pmax(eg$values, 1e-12)           # piccolo ridge
-      eg$vectors %*% diag(1/d, length(d)) %*% t(eg$vectors)
-    }
-  )
+  # Match scaling conventions:
+  # - use_sum = TRUE  -> H is a sum over observations
+  # - use_sum = FALSE -> H is an average (divide by N)
+  H_use <- if (use_sum) H else H / N
   
-  # Var(lambda) classica (Observed Information)
-  Vlam <- Ainv
+  # Var(lambda) approximation using a robust inverse
+  Hinv <- inv_sym_pd(H_use)
   
-  # Trasformazione a beta = lambda / (1 - nu)  (nu costante)
+  # Delta method for beta = lambda / (1 - nu), with nu treated as constant
+  Vbeta <- Hinv / (1 - nu)^2
+  dimnames(Vbeta) <- list(colnames(X), colnames(X))
+  
+  # Enforce numerical symmetry of the covariance matrix  
+  asym <- max(abs(Vbeta - t(Vbeta)))
+  if (asym > 1e-8) warning("Covariance matrix of regression coefficients shows non-negligible asymmetry (max abs diff = ", asym, ").")
+  Vbeta <- 0.5 * (Vbeta + t(Vbeta))
+
+  return(Vbeta)
+}
+
+
+# Sandwich vcov for GCE/GME binary logit (J = 2)
+# Returns Var(beta) where beta = lambda / (1 - nu), treating nu as fixed.
+#' @noRd
+vcov_GCElogit_sandwich <- function(object, use_sum = TRUE, asym_tol = 1e-8) {
+  # Expected fields:
+  #   hess : (K x K) Hessian w.r.t. lambda
+  #   nu   : scalar
+  #   X    : (N x K) design matrix
+  #   Y    : (N) or (N x 2) response (success indicator in column 2 if matrix)
+  #   p    : (N x 2) fitted probabilities (class 2 in column 2)
+  #   e    : (N x 2) additional term (class 2 in column 2)
+  stopifnot(!is.null(object$hess), !is.null(object$nu), !is.null(object$X),
+            !is.null(object$Y),    !is.null(object$p),  !is.null(object$e))
+  
+  X  <- object$X
+  N  <- nrow(X)
+  nu <- as.numeric(object$nu)
+  
+  # Symmetrise for numerical stability
+  H <- 0.5 * (object$hess + t(object$hess))
+  
+  # Extract class-2 quantities
+  y  <- if (is.matrix(object$Y)) as.numeric(object$Y[, 2]) else as.numeric(object$Y)
+  pi <- as.numeric(object$p[, 2])
+  e2 <- as.numeric(object$e[, 2])
+  
+  # Per-observation score contributions: row i is x_i * (pi_i + e_i - y_i)
+  resid <- -y + pi + e2
+  S     <- X * resid
+  
+  # Match scaling conventions: use sums (default) or averages for both bread and meat
+  H_use <- if (use_sum) H else H / N
+  Meat  <- if (use_sum) crossprod(S) else crossprod(S) / N
+  
+  # Sandwich covariance for lambda
+  Hinv <- inv_sym_pd(H_use)
+  Vlam <- Hinv %*% Meat %*% Hinv
+  
+  # Delta method for beta = lambda / (1 - nu), with nu treated as constant
   Vbeta <- Vlam / (1 - nu)^2
   
-  # Simmetrizza numericamente e assegna i nomi (dalle colonne di X)
+  # Enforce numerical symmetry of the covariance matrix of regression coefficients
+  asym <- max(abs(Vbeta - t(Vbeta)))
+  if (is.finite(asym) && asym > asym_tol) {
+    warning("Covariance matrix of regression coefficients shows non-negligible asymmetry (max abs diff = ",
+            signif(asym, 6), ").")
+  }
   Vbeta <- 0.5 * (Vbeta + t(Vbeta))
-  dimnames(Vbeta) <- list(colnames(object$X), colnames(object$X))
+  dimnames(Vbeta) <- list(colnames(X), colnames(X))
   
   return(Vbeta)
 }
 
 
-
-
+# Invert a symmetric positive-(semi)definite matrix.
+# Tries a Cholesky-based inverse; falls back to an eigen-based regularised inverse.
+#' @noRd
+inv_sym_pd <- function(M, ridge = 1e-10) {
+  stopifnot(is.matrix(M), nrow(M) == ncol(M), is.numeric(M), 
+            length(ridge) == 1L, ridge > 0)
+  # Symmetrise to remove numerical asymmetry
+  M <- 0.5 * (M + t(M))
+  tryCatch(
+    chol2inv(chol(M)),
+    error = function(e) {
+      eg <- eigen(M, symmetric = TRUE)
+      # Regularise small/negative eigenvalues to stabilise inversion
+      d_inv <- 1 / pmax(eg$values, ridge)
+      # V diag(d_inv) V'
+      eg$vectors %*% (d_inv * t(eg$vectors))
+    }
+  )
+}
 

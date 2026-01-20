@@ -103,6 +103,7 @@ GCElogit.fit <- function(y, X, v,
                                               use_grad = TRUE,
                                               grad_fun = NULL)) {
   
+  cl <- match.call()
   # --- Check X
   if (!is.matrix(X)) stop("X must be a numeric matrix.")
   if (!is.numeric(X)) stop("X must be numeric.")
@@ -255,6 +256,7 @@ GCElogit.fit <- function(y, X, v,
   betas <- lambda[,2]/(1-nu)
   
   out <- list(
+    call                = call,
     coefficients        = betas,
     lambda              = lambda,
     grad                = grad,
